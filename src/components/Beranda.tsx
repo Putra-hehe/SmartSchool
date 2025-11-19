@@ -7,10 +7,6 @@ import {
   ChevronRight,
   Plus,
   Check,
-  Camera,
-  Clock,
-  MapPin,
-  X
 } from 'lucide-react';
 import { SuratIzinDialog } from './SuratIzinDialog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -23,45 +19,34 @@ export function Beranda({ onNavigate }: BerandaProps) {
   const [absenMasuk, setAbsenMasuk] = useState(false);
   const [absenPulang, setAbsenPulang] = useState(false);
   const [showSuratIzin, setShowSuratIzin] = useState(false);
-  const [showConfirmMasuk, setShowConfirmMasuk] = useState(false);
 
-  // waktu untuk ditampilkan di modal
-  const now = new Date();
-  const formattedTime = now.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const handleAbsenMasukClick = () => {
-    // buka modal konfirmasi dulu
-    setShowConfirmMasuk(true);
-  };
-
-  const handleConfirmAbsenMasuk = () => {
+  const handleAbsenMasuk = () => {
     setAbsenMasuk(true);
-    setShowConfirmMasuk(false);
   };
 
   const handleAbsenPulang = () => {
+    if (!absenMasuk) return;
     setAbsenPulang(true);
   };
 
   return (
     <>
+      {/* area scroll konten, nggak ada overlay aneh2 */}
       <div
         className="w-full h-full overflow-y-auto pb-[96px]"
         style={{ backgroundColor: '#F3F6F8' }}
       >
-        {/* Header */}
+        {/* HEADER */}
         <div
-          className="w-full h-[200px] px-4 pt-4 pb-6 flex flex-col gap-3"
+          className="w-full px-4 pt-4 pb-6 flex flex-col gap-3 rounded-b-[32px]"
           style={{
-            background: 'linear-gradient(135deg, #0EA5A3 0%, #4DB8B6 100%)',
+            background:
+              'linear-gradient(135deg, #0EA5A3 0%, #1D7C8F 40%, #146C82 100%)',
             maxWidth: '390px',
-            boxShadow: '0 4px 12px rgba(14, 165, 163, 0.15)',
+            boxShadow: '0 4px 12px rgba(14, 165, 163, 0.25)',
           }}
         >
-          {/* Status Bar */}
+          {/* status bar */}
           <div className="flex items-center justify-between text-white text-[12px]">
             <span>18.22</span>
             <div className="flex items-center gap-1">
@@ -70,46 +55,41 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </div>
           </div>
 
-          {/* School Info */}
+          {/* judul sekolah */}
           <div className="flex flex-col gap-1">
-            <h1 className="text-[24px] text-white">Smartschool</h1>
-            <p className="text-white/90 text-[14px]">SMAN 6 YOGYAKARTA</p>
+            <h1 className="text-[22px] font-semibold text-white leading-tight">
+              Smartschool
+            </h1>
+            <p className="text-white/85 text-[13px]">SMAN 6 YOGYAKARTA</p>
           </div>
 
-          {/* User Card */}
-          <div
-            className="w-full max-w-[340px] mx-auto h-[90px] rounded-[24px] px-3 py-3 flex items-center gap-3"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(10px)',
-            }}
-          >
-            <ImageWithFallback
-              src="/avatar-udin.png"
-              alt="Profile"
-              className="w-[48px] h-[48px] rounded-full object-cover flex-shrink-0"
-              style={{
-                border: '2px solid rgba(255, 255, 255, 0.5)',
-                objectPosition: 'top',
-              }}
-            />
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[16px]">👋</span>
-                <span className="text-white text-[15px] leading-tight">
-                  Hai, Udin Syamsudin
-                </span>
-              </div>
-              <span className="text-white/90 text-[13px] leading-tight">
-                Kelas 10E-1
-              </span>
+          {/* kartu kecil avatar + hai udin */}
+          <div className="flex items-center gap-3 rounded-2xl bg-white/18 px-3 py-2 shadow-sm">
+            <div className="h-10 w-10 rounded-full bg-white/40 overflow-hidden border border-white/60 flex items-center justify-center flex-shrink-0">
+              <ImageWithFallback
+                src="/avatar-udin.png"
+                alt="Foto profil siswa"
+                className="h-full w-full rounded-full object-cover"
+                style={{ objectPosition: 'center' }}
+              />
+            </div>
+
+            <div className="flex flex-col leading-tight">
+              <p className="text-[11px] text-teal-50/85 flex items-center gap-1">
+                <span>👋</span>
+                <span>Hai,</span>
+              </p>
+              <p className="text-[14px] font-semibold text-white">
+                Udin Syamsudin
+              </p>
+              <p className="text-[11px] text-teal-50/85">Kelas 10E-1</p>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* MAIN CONTENT */}
         <div className="px-4 -mt-2 flex flex-col gap-4">
-          {/* Presensi Card */}
+          {/* KARTU PRESENSI */}
           <div className="w-full max-w-[360px] mx-auto bg-white rounded-[24px] p-5 shadow-sm flex flex-col gap-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col gap-1">
@@ -120,16 +100,19 @@ export function Beranda({ onNavigate }: BerandaProps) {
                   Senin, 18 November 2025
                 </p>
               </div>
-              <button className="p-2">
+              <button type="button" className="p-2">
                 <div className="w-1 h-1 rounded-full bg-gray-400 mb-1" />
                 <div className="w-1 h-1 rounded-full bg-gray-400 mb-1" />
                 <div className="w-1 h-1 rounded-full bg-gray-400" />
               </button>
             </div>
 
+            {/* tombol absen */}
             <div className="flex gap-3">
+              {/* ABSEN MASUK */}
               {absenMasuk ? (
                 <button
+                  type="button"
                   disabled
                   className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center gap-2"
                   style={{
@@ -143,7 +126,8 @@ export function Beranda({ onNavigate }: BerandaProps) {
                 </button>
               ) : (
                 <button
-                  onClick={handleAbsenMasukClick}
+                  type="button"
+                  onClick={handleAbsenMasuk}
                   className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center"
                   style={{
                     backgroundColor: '#E2E8F0',
@@ -155,7 +139,9 @@ export function Beranda({ onNavigate }: BerandaProps) {
                 </button>
               )}
 
+              {/* ABSEN PULANG */}
               <button
+                type="button"
                 onClick={handleAbsenPulang}
                 disabled={!absenMasuk || absenPulang}
                 className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center gap-2"
@@ -187,7 +173,9 @@ export function Beranda({ onNavigate }: BerandaProps) {
               </button>
             </div>
 
+            {/* AJUKAN SURAT IZIN */}
             <button
+              type="button"
               onClick={() => setShowSuratIzin(true)}
               className="w-full h-[44px] rounded-[20px] border-2 flex items-center justify-center gap-2"
               style={{
@@ -202,9 +190,10 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </button>
           </div>
 
-          {/* Quick Actions */}
+          {/* QUICK ACTIONS */}
           <div className="w-full max-w-[360px] mx-auto grid grid-cols-4 gap-4 px-2">
             <button
+              type="button"
               onClick={() => onNavigate('jadwal')}
               className="flex flex-col items-center gap-2"
             >
@@ -223,6 +212,7 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </button>
 
             <button
+              type="button"
               onClick={() => onNavigate('riwayat')}
               className="flex flex-col items-center gap-2"
             >
@@ -241,6 +231,7 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </button>
 
             <button
+              type="button"
               onClick={() => onNavigate('panduan')}
               className="flex flex-col items-center gap-2"
             >
@@ -259,6 +250,7 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </button>
 
             <button
+              type="button"
               onClick={() => onNavigate('bantuan')}
               className="flex flex-col items-center gap-2"
             >
@@ -277,7 +269,7 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </button>
           </div>
 
-          {/* Reminder */}
+          {/* REMINDER */}
           <div
             className="w-full max-w-[360px] mx-auto rounded-[20px] p-4"
             style={{
@@ -300,16 +292,14 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </p>
           </div>
 
-          {/* Riwayat Presensi Ringkas */}
-          <div className="w-full max-w-[360px] mx-auto flex flex-col gap-3">
+          {/* RIWAYAT RINGKAS */}
+          <div className="w-full max-w-[360px] mx-auto flex flex-col gap-3 mb-4">
             <div className="flex items-center justify-between">
-              <h2
-                className="text-[18px]"
-                style={{ color: '#0EA5A3' }}
-              >
+              <h2 className="text-[18px]" style={{ color: '#0EA5A3' }}>
                 Riwayat presensi harian
               </h2>
               <button
+                type="button"
                 onClick={() => onNavigate('riwayat')}
                 className="flex items-center gap-1"
                 style={{ color: '#0EA5A3' }}
@@ -365,66 +355,6 @@ export function Beranda({ onNavigate }: BerandaProps) {
           </div>
         </div>
       </div>
-
-      {/* Modal Konfirmasi Absen Masuk */}
-      {showConfirmMasuk && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-[340px] max-w-[90vw] rounded-2xl bg-white p-5 shadow-xl">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-[18px] font-semibold text-slate-900">
-                  Konfirmasi Absen Masuk
-                </h2>
-                <p className="text-[13px] text-slate-500 mt-1">
-                  Pastikan kamu berada di lokasi yang tepat dan kamera siap.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowConfirmMasuk(false)}
-                className="p-1 rounded-full hover:bg-slate-100"
-              >
-                <X size={18} className="text-slate-500" />
-              </button>
-            </div>
-
-            {/* Area kamera */}
-            <div className="mb-4 rounded-2xl bg-slate-100 border border-slate-200 h-[180px] flex flex-col items-center justify-center gap-2 text-slate-400 text-[14px]">
-              <Camera size={24} />
-              <span>Kamera Selfie</span>
-            </div>
-
-            {/* Waktu & lokasi */}
-            <div className="mb-5 space-y-1 text-[13px] text-slate-600">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-rose-500" />
-                <span>
-                  Waktu: {formattedTime} WIB
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-rose-500" />
-                <span>Lokasi: SMAN 6 Yogyakarta</span>
-              </div>
-            </div>
-
-            {/* Tombol aksi */}
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowConfirmMasuk(false)}
-                className="h-[38px] px-4 rounded-[10px] border border-slate-300 text-[14px] text-slate-600 hover:bg-slate-50"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleConfirmAbsenMasuk}
-                className="h-[38px] px-4 rounded-[10px] bg-teal-600 text-[14px] text-white font-medium hover:bg-teal-700"
-              >
-                Konfirmasi
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showSuratIzin && (
         <SuratIzinDialog onClose={() => setShowSuratIzin(false)} />
