@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useRef, ChangeEvent } from 'react';
 import {
   Calendar,
   TrendingUp,
@@ -20,33 +20,67 @@ export function Beranda({ onNavigate }: BerandaProps) {
   const [absenPulang, setAbsenPulang] = useState(false);
   const [showSuratIzin, setShowSuratIzin] = useState(false);
 
-  const handleAbsenMasuk = () => {
+  // modal konfirmasi absen masuk
+  const [showKonfirmasiMasuk, setShowKonfirmasiMasuk] = useState(false);
+
+  // kamera / selfie
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+  const [hasSelfie, setHasSelfie] = useState(false);
+
+  const handleOpenKonfirmasiMasuk = () => {
+    if (absenMasuk) return;
+    setShowKonfirmasiMasuk(true);
+  };
+
+  const handleKonfirmasiMasuk = () => {
+    if (!hasSelfie) return; // harus ada selfie
     setAbsenMasuk(true);
+    setShowKonfirmasiMasuk(false);
+    resetSelfie();
   };
 
   const handleAbsenPulang = () => {
-    if (!absenMasuk) return;
+    if (!absenMasuk || absenPulang) return;
     setAbsenPulang(true);
   };
 
+  const handleOpenCamera = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleSelfieChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setSelfiePreview(url);
+    setHasSelfie(true);
+  };
+
+  const resetSelfie = () => {
+    setSelfiePreview(null);
+    setHasSelfie(false);
+  };
+
   return (
-    <>
-      {/* area scroll konten, nggak ada overlay aneh2 */}
+    // wrapper relative biar modal absolute nempel ke "layar HP"
+    <div className="relative w-full h-full">
+      {/* MAIN SCROLL CONTENT */}
       <div
         className="w-full h-full overflow-y-auto pb-[96px]"
         style={{ backgroundColor: '#F3F6F8' }}
       >
         {/* HEADER */}
         <div
-          className="w-full px-4 pt-4 pb-6 flex flex-col gap-3 rounded-b-[32px]"
+          className="w-full h-[200px] px-4 pt-4 pb-6 flex flex-col gap-3"
           style={{
-            background:
-              'linear-gradient(135deg, #0EA5A3 0%, #1D7C8F 40%, #146C82 100%)',
+            background: 'linear-gradient(135deg, #0EA5A3 0%, #4DB8B6 100%)',
             maxWidth: '390px',
-            boxShadow: '0 4px 12px rgba(14, 165, 163, 0.25)',
+            boxShadow: '0 4px 12px rgba(14, 165, 163, 0.15)',
           }}
         >
-          {/* status bar */}
+          {/* Status Bar */}
           <div className="flex items-center justify-between text-white text-[12px]">
             <span>18.22</span>
             <div className="flex items-center gap-1">
@@ -55,41 +89,43 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </div>
           </div>
 
-          {/* judul sekolah */}
+          {/* School Info */}
           <div className="flex flex-col gap-1">
-            <h1 className="text-[22px] font-semibold text-white leading-tight">
-              Smartschool
-            </h1>
-            <p className="text-white/85 text-[13px]">SMAN 6 YOGYAKARTA</p>
+            <h1 className="text-[24px] text-white">Smartschool</h1>
+            <p className="text-white/90 text-[14px]">SMAN 6 YOGYAKARTA</p>
           </div>
 
-          {/* kartu kecil avatar + hai udin */}
-          <div className="flex items-center gap-3 rounded-2xl bg-white/18 px-3 py-2 shadow-sm">
-            <div className="h-10 w-10 rounded-full bg-white/40 overflow-hidden border border-white/60 flex items-center justify-center flex-shrink-0">
-              <ImageWithFallback
-                src="/avatar-udin.png"
-                alt="Foto profil siswa"
-                className="h-full w-full rounded-full object-cover"
-                style={{ objectPosition: 'center' }}
-              />
-            </div>
-
-            <div className="flex flex-col leading-tight">
-              <p className="text-[11px] text-teal-50/85 flex items-center gap-1">
-                <span>👋</span>
-                <span>Hai,</span>
-              </p>
-              <p className="text-[14px] font-semibold text-white">
+          {/* USER CARD */}
+          <div
+            className="w-full max-w-[340px] mx-auto h-[90px] rounded-[24px] px-4 py-3 flex items-center gap-3"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <ImageWithFallback
+              src="/avatar-udin.png"
+              alt="Foto profil siswa"
+              className="w-[48px] h-[48px] rounded-full object-cover flex-shrink-0"
+              style={{
+                border: '2px solid rgba(255, 255, 255, 0.5)',
+                objectPosition: 'top',
+              }}
+            />
+            <div className="flex flex-col gap-1">
+              <p className="text-white text-[16px] font-semibold leading-tight">
                 Udin Syamsudin
               </p>
-              <p className="text-[11px] text-teal-50/85">Kelas 10E-1</p>
+              <p className="text-white/90 text-[13px] leading-tight">
+                Kelas 10E-1 • NISN: 0012345678
+              </p>
             </div>
           </div>
         </div>
 
         {/* MAIN CONTENT */}
         <div className="px-4 -mt-2 flex flex-col gap-4">
-          {/* KARTU PRESENSI */}
+          {/* PRESENSI CARD */}
           <div className="w-full max-w-[360px] mx-auto bg-white rounded-[24px] p-5 shadow-sm flex flex-col gap-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col gap-1">
@@ -100,46 +136,40 @@ export function Beranda({ onNavigate }: BerandaProps) {
                   Senin, 18 November 2025
                 </p>
               </div>
-              <button type="button" className="p-2">
+              <button className="p-2" type="button">
                 <div className="w-1 h-1 rounded-full bg-gray-400 mb-1" />
                 <div className="w-1 h-1 rounded-full bg-gray-400 mb-1" />
                 <div className="w-1 h-1 rounded-full bg-gray-400" />
               </button>
             </div>
 
-            {/* tombol absen */}
             <div className="flex gap-3">
-              {/* ABSEN MASUK */}
-              {absenMasuk ? (
-                <button
-                  type="button"
-                  disabled
-                  className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center gap-2"
-                  style={{
-                    backgroundColor: '#16A34A',
-                    color: 'white',
-                    padding: '10px 16px',
-                  }}
-                >
-                  <Check size={18} />
-                  <span className="text-[14px] leading-none">Sudah Absen</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleAbsenMasuk}
-                  className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center"
-                  style={{
-                    backgroundColor: '#E2E8F0',
-                    color: '#64748B',
-                    padding: '10px 16px',
-                  }}
-                >
+              {/* Absen Masuk → buka modal */}
+              <button
+                type="button"
+                onClick={handleOpenKonfirmasiMasuk}
+                disabled={absenMasuk}
+                className="flex-1 h-[44px] rounded-[20px] flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: absenMasuk ? '#16A34A' : '#E2E8F0',
+                  color: absenMasuk ? 'white' : '#64748B',
+                  cursor: absenMasuk ? 'default' : 'pointer',
+                  padding: '10px 16px',
+                }}
+              >
+                {absenMasuk ? (
+                  <>
+                    <Check size={18} />
+                    <span className="text-[14px] leading-none">
+                      Sudah Absen
+                    </span>
+                  </>
+                ) : (
                   <span className="text-[14px] leading-none">Absen Masuk</span>
-                </button>
-              )}
+                )}
+              </button>
 
-              {/* ABSEN PULANG */}
+              {/* Absen Pulang */}
               <button
                 type="button"
                 onClick={handleAbsenPulang}
@@ -173,7 +203,6 @@ export function Beranda({ onNavigate }: BerandaProps) {
               </button>
             </div>
 
-            {/* AJUKAN SURAT IZIN */}
             <button
               type="button"
               onClick={() => setShowSuratIzin(true)}
@@ -292,8 +321,8 @@ export function Beranda({ onNavigate }: BerandaProps) {
             </p>
           </div>
 
-          {/* RIWAYAT RINGKAS */}
-          <div className="w-full max-w-[360px] mx-auto flex flex-col gap-3 mb-4">
+          {/* RINGKASAN RIWAYAT */}
+          <div className="w-full max-w-[360px] mx-auto flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h2 className="text-[18px]" style={{ color: '#0EA5A3' }}>
                 Riwayat presensi harian
@@ -356,9 +385,113 @@ export function Beranda({ onNavigate }: BerandaProps) {
         </div>
       </div>
 
+      {/* MODAL SURAT IZIN */}
       {showSuratIzin && (
         <SuratIzinDialog onClose={() => setShowSuratIzin(false)} />
       )}
-    </>
+
+      {/* MODAL KONFIRMASI ABSEN MASUK - FIXED */}
+      {showKonfirmasiMasuk && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div 
+            className="w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col"
+            style={{ 
+              maxWidth: '448px',
+              maxHeight: '85vh'
+            }}
+          >
+            {/* Header - Fixed */}
+            <div className="p-6 pb-4 border-b border-slate-200 flex-shrink-0">
+              <div className="flex items-start justify-between">
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Konfirmasi Absen Masuk
+                </h2>
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-600"
+                  onClick={() => {
+                    setShowKonfirmasiMasuk(false);
+                    resetSelfie();
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <p className="text-sm text-slate-600 mb-4">
+                Pastikan Anda berada di lokasi yang tepat dan kamera Anda siap.
+              </p>
+
+              {/* Area kamera */}
+              <div
+                className="w-full rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 text-sm mb-4 border border-dashed border-slate-300 cursor-pointer overflow-hidden"
+                style={{ height: '200px' }}
+                onClick={handleOpenCamera}
+              >
+                {selfiePreview ? (
+                  <img
+                    src={selfiePreview}
+                    alt="Selfie"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span>📷 Kamera Selfie (klik untuk ambil foto)</span>
+                )}
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="user"
+                className="hidden"
+                onChange={handleSelfieChange}
+              />
+
+              <div className="space-y-1 text-sm text-slate-600 mb-2">
+                <div className="flex items-center gap-2">
+                  <span>⏰</span>
+                  <span>Waktu: 21.37 WIB</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>📍</span>
+                  <span>Lokasi: SMAN 6 Yogyakarta</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer - Fixed */}
+            <div className="p-6 pt-4 border-t border-slate-200 flex justify-end gap-2 flex-shrink-0">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-lg border border-slate-300 text-sm text-slate-700"
+                onClick={() => {
+                  setShowKonfirmasiMasuk(false);
+                  resetSelfie();
+                }}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleKonfirmasiMasuk}
+                disabled={!hasSelfie}
+                style={{
+                  backgroundColor: hasSelfie ? '#0EA5A3' : '#CBD5E1',
+                  color: hasSelfie ? 'white' : '#94A3B8',
+                  cursor: hasSelfie ? 'pointer' : 'not-allowed',
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium"
+              >
+                Konfirmasi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
